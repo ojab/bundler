@@ -336,7 +336,9 @@ module Bundler
       loaded_gem_paths = Bundler.rubygems.loaded_gem_paths
 
       $LOAD_PATH.reject! do |p|
-        next if File.expand_path(p).start_with?(bundler_lib)
+        path = File.expand_path(p)
+        path = File.realpath(path) if File.exist?(path)
+        next if path.start_with?(bundler_lib)
         loaded_gem_paths.delete(p)
       end
       $LOAD_PATH.uniq!
