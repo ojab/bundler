@@ -857,7 +857,7 @@ end
     expect(out).to eq("true\ntrue")
   end
 
-  context "with bundler is located in symlinked GEM_HOME" do
+  context "with bundler is located in symlinked GEM_HOME", :focus => true do
     let(:gem_home) { Dir.mktmpdir }
     let(:symlinked_gem_home) { Tempfile.new }
     let(:bundler_dir) { File.expand_path("../..", __dir__) }
