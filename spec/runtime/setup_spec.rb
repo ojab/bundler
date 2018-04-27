@@ -861,6 +861,40 @@ end
     expect(out).to eq("true\ntrue")
   end
 
+  fcontext "with symlinked bundler lib" do
+    let(:gem_home) { Dir.mktmpdir }
+    let(:symlinked_gem_home) do
+      Tempfile.new
+    end
+    let(:bundler_dir) { File.expand_path("../..", __dir__) }
+
+    before do
+      FileUtils.ln_sf(gem_home, symlinked_gem_home)
+      gems_dir = File.join(gem_home, "gems")
+      specifications_dir = File.join(gem_home, "specifications")
+      Dir.mkdir(gems_dir)
+      Dir.mkdir(specifications_dir)
+      FileUtils.ln_s(bundler_dir, File.join(gems_dir, "bundler-1.0.0"))
+      gemspec = File.read("#{bundler_dir}/bundler.gemspec").sub("Bundler::VERSION", '"1.0.0"')
+      gemspec = gemspec.lines.grep_v(%r{lib/bundler/version}).join
+      File.open(File.join(specifications_dir, "bundler.gemspec"), "wb") do |f|
+        f.write(gemspec)
+      end
+    end
+
+    it "sdasda" do
+      install_gemfile ""
+
+      ENV["GEM_PATH"] = symlinked_gem_home.to_path
+      ruby <<-R
+        $LOAD_PATH.delete_at(0)
+        puts (require 'bundler/setup')
+      R
+
+      expect(out).to eql("true")
+    end
+  end
+
   it "stubs out Gem.refresh so it does not reveal system gems" do
     system_gems "rack-1.0.0"
 
