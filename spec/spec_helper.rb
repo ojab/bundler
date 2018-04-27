@@ -105,7 +105,7 @@ RSpec.configure do |config|
   config.filter_run_excluding :rubygems_master => (ENV["RGV"] != "master")
   config.filter_run_excluding :bundler => LessThanProc.with(Bundler::VERSION.split(".")[0, 2].join("."))
 
-  config.filter_run_when_matching :focus unless ENV["CI"]
+  config.filter_run_when_matching :focus
 
   original_wd  = Dir.pwd
   original_env = ENV.to_hash.delete_if {|k, _v| k.start_with?(Bundler::EnvironmentPreserver::BUNDLER_PREFIX) }
